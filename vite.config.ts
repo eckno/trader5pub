@@ -10,6 +10,15 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    port: 6666,
+    strictPort: true,
+    host: true,
+    allowedHosts: [
+      'traderfive.com',
+      'ai.traderfive.com',
+    ]
+  },
   resolve: {
     alias: {
       // Alias @ to the src directory
