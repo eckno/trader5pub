@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Alert - trader5</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0f172a; color: #e2e8f0;">
+    <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #0f172a;">
+        <tr>
+            <td style="padding: 40px 20px;">
+                <table role="presentation" style="max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="padding: 40px 40px 20px; text-align: center; background-color: #1e293b;">
+                            <table role="presentation" style="margin: 0 auto;">
+                                <tr>
+                                    <td style="vertical-align: middle;">
+                                        <div style="width: 40px; height: 40px; background-color: #10b981; border-radius: 8px; display: inline-block; vertical-align: middle; margin-right: 12px; text-align: center; line-height: 40px;">
+                                            <span style="color: #ffffff; font-size: 24px; font-weight: bold;">↗</span>
+                                        </div>
+                                    </td>
+                                    <td style="vertical-align: middle;">
+                                        <span style="font-size: 32px; font-weight: bold; color: #ffffff;">
+                                            trader<span style="color: #10b981;">5</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 40px;">
+                            <!-- Status Badge -->
+                            <table role="presentation" style="margin: 0 auto 24px; text-align: center;">
+                                <tr>
+                                    <td>
+                                        <div style="display: inline-block; background-color: rgba(16, 185, 129, 0.2); color: #10b981; padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
+                                            {{TRADE_STATUS}}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Title -->
+                            <h1 style="margin: 0 0 16px; font-size: 28px; font-weight: bold; color: #ffffff; text-align: center;">
+                                Trade Executed
+                            </h1>
+
+                            <!-- Description -->
+                            <p style="margin: 0 0 32px; font-size: 16px; line-height: 24px; color: #cbd5e1; text-align: center;">
+                                Your AI trading bot has executed a new trade. Here are the details:
+                            </p>
+
+                            <!-- Trade Summary Card -->
+                            <table role="presentation" style="width: 100%; margin: 0 0 24px; background-color: #1e293b; border-radius: 12px; overflow: hidden;">
+                                <tr>
+                                    <td style="padding: 24px; background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+                                        <table role="presentation" style="width: 100%;">
+                                            <tr>
+                                                <td style="text-align: center;">
+                                                    <p style="margin: 0 0 8px; font-size: 14px; color: rgba(255, 255, 255, 0.8);">Position Type</p>
+                                                    <p style="margin: 0; font-size: 28px; font-weight: bold; color: #ffffff;">
+                                                        {{POSITION_TYPE}}
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 24px;">
+                                        <table role="presentation" style="width: 100%;">
+                                            <tr>
+                                                <td style="padding: 12px 0; border-bottom: 1px solid #334155;">
+                                                    <span style="font-size: 14px; color: #94a3b8;">Asset</span>
+                                                </td>
+                                                <td style="padding: 12px 0; text-align: right; border-bottom: 1px solid #334155;">
+                                                    <span style="font-size: 14px; color: #ffffff; font-weight: bold;">BTC/USD</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 12px 0; border-bottom: 1px solid #334155;">
+                                                    <span style="font-size: 14px; color: #94a3b8;">Entry Price</span>
+                                                </td>
+                                                <td style="padding: 12px 0; text-align: right; border-bottom: 1px solid #334155;">
+                                                    <span style="font-size: 14px; color: #ffffff; font-family: 'Courier New', monospace;">${{ENTRY_PRICE}}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 12px 0; border-bottom: 1px solid #334155;">
+                                                    <span style="font-size: 14px; color: #94a3b8;">Position Size</span>
+                                                </td>
+                                                <td style="padding: 12px 0; text-align: right; border-bottom: 1px solid #334155;">
+                                                    <span style="font-size: 14px; color: #ffffff; font-family: 'Courier New', monospace;">{{POSITION_SIZE}} BTC</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 12px 0; border-bottom: 1px solid #334155;">
+                                                    <span style="font-size: 14px; color: #94a3b8;">Strategy</span>
+                                                </td>
+                                                <td style="padding: 12px 0; text-align: right; border-bottom: 1px solid #334155;">
+                                                    <span style="font-size: 14px; color: #ffffff;">{{STRATEGY_NAME}}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 12px 0;">
+                                                    <span style="font-size: 14px; color: #94a3b8;">Timestamp</span>
+                                                </td>
+                                                <td style="padding: 12px 0; text-align: right;">
+                                                    <span style="font-size: 14px; color: #ffffff;">{{TIMESTAMP}}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Risk Management -->
+                            <table role="presentation" style="width: 100%; margin: 0 0 32px; background-color: #1e293b; border-radius: 8px;">
+                                <tr>
+                                    <td style="padding: 20px;">
+                                        <p style="margin: 0 0 16px; font-size: 14px; font-weight: bold; color: #ffffff;">Risk Management</p>
+                                        <table role="presentation" style="width: 100%;">
+                                            <tr>
+                                                <td style="width: 50%; padding-right: 8px;">
+                                                    <div style="background-color: #0f172a; border-radius: 6px; padding: 12px;">
+                                                        <p style="margin: 0 0 4px; font-size: 12px; color: #94a3b8;">Stop Loss</p>
+                                                        <p style="margin: 0; font-size: 16px; color: #ef4444; font-weight: bold; font-family: 'Courier New', monospace;">${{STOP_LOSS}}</p>
+                                                    </div>
+                                                </td>
+                                                <td style="width: 50%; padding-left: 8px;">
+                                                    <div style="background-color: #0f172a; border-radius: 6px; padding: 12px;">
+                                                        <p style="margin: 0 0 4px; font-size: 12px; color: #94a3b8;">Take Profit</p>
+                                                        <p style="margin: 0; font-size: 16px; color: #10b981; font-weight: bold; font-family: 'Courier New', monospace;">${{TAKE_PROFIT}}</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Info Box -->
+                            <table role="presentation" style="width: 100%; margin: 0 0 24px; background-color: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px;">
+                                <tr>
+                                    <td style="padding: 20px;">
+                                        <p style="margin: 0; font-size: 14px; line-height: 20px; color: #94a3b8;">
+                                            <strong style="color: #60a5fa;">ℹ️ AI Decision:</strong><br>
+                                            {{AI_REASONING}}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- CTA Button -->
+                            <table role="presentation" style="width: 100%;">
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <a href="{{DASHBOARD_URL}}" style="display: inline-block; background-color: #10b981; color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 16px; font-weight: bold;">
+                                            View Full Details
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 30px 40px; background-color: #0f172a; border-top: 1px solid #334155;">
+                            <p style="margin: 0 0 12px; font-size: 12px; color: #64748b; text-align: center;">
+                                <strong>Risk Warning:</strong> Trading cryptocurrencies involves substantial risk of loss. Past performance does not guarantee future results.
+                            </p>
+                            <p style="margin: 0 0 12px; font-size: 12px; color: #64748b; text-align: center;">
+                                You can manage your notification preferences in your <a href="{{SETTINGS_URL}}" style="color: #10b981; text-decoration: none;">account settings</a>.
+                            </p>
+                            <p style="margin: 0; font-size: 11px; color: #475569; text-align: center;">
+                                © 2024 trader5. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
