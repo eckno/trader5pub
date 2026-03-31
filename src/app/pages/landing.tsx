@@ -33,7 +33,6 @@ const TICKER_ITEMS = [
   { pair: "SOL/USDT", price: 182.45, change: +4.12 },
 ];
 
-// ─── Fake live trade feed ─────────────────────────────────────────────────────
 const TRADE_TEMPLATES = [
   { user: "usr_7x2k", action: "BUY",  asset: "BTC/USDT", amount: "$1,200", pct: "+3.2%",  strategy: "Balanced" },
   { user: "usr_9mf3", action: "SELL", asset: "ETH/USDT", amount: "$840",   pct: "+5.7%",  strategy: "Aggressive" },
@@ -94,13 +93,9 @@ const STATS = [
 // ─── Neural network SVG ───────────────────────────────────────────────────────
 function NeuralNet() {
   const nodes = [
-    // input layer
     { x: 60, y: 80 }, { x: 60, y: 160 }, { x: 60, y: 240 }, { x: 60, y: 320 },
-    // hidden 1
     { x: 180, y: 60 }, { x: 180, y: 140 }, { x: 180, y: 200 }, { x: 180, y: 280 }, { x: 180, y: 340 },
-    // hidden 2
     { x: 300, y: 100 }, { x: 300, y: 180 }, { x: 300, y: 260 }, { x: 300, y: 320 },
-    // output
     { x: 400, y: 150 }, { x: 400, y: 250 },
   ];
   const edges = [
@@ -137,10 +132,9 @@ export function LandingPage() {
   const navigate = useNavigate();
   const [trades, setTrades] = useState(TRADE_TEMPLATES.slice(0, 5));
   const [statsVisible, setStatsVisible] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
-  const tickerRef = useRef<HTMLDivElement>(null);
 
-  // Rotate live trade feed
   useEffect(() => {
     let idx = 5;
     const interval = setInterval(() => {
@@ -151,7 +145,6 @@ export function LandingPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Trigger stat counters when in view
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) setStatsVisible(true); },
@@ -237,6 +230,7 @@ export function LandingPage() {
           transition: all 0.2s;
           position: relative;
           overflow: hidden;
+          white-space: nowrap;
         }
         .btn-primary::after {
           content: '';
@@ -259,6 +253,7 @@ export function LandingPage() {
           border-radius: 6px;
           cursor: pointer;
           transition: all 0.2s;
+          white-space: nowrap;
         }
         .btn-outline:hover { border-color: #10b981; color: #10b981; }
 
@@ -334,6 +329,213 @@ export function LandingPage() {
           transition: border-color 0.3s;
         }
         .testimonial:hover { border-color: rgba(16,185,129,0.2); }
+
+        /* ── LAYOUT HELPERS ── */
+        .section-pad {
+          padding-left: max(24px, calc((100vw - 1200px) / 2));
+          padding-right: max(24px, calc((100vw - 1200px) / 2));
+        }
+
+        /* Hero two-col */
+        .hero-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 60px;
+          align-items: center;
+        }
+
+        /* Stats 4-col */
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
+        }
+
+        /* Strategies 2-col */
+        .strategies-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 20px;
+        }
+
+        /* How-it-works 3-col */
+        .steps-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 2px;
+        }
+
+        /* Testimonials 3-col */
+        .testimonials-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+        }
+
+        /* FAQ 2-col */
+        .faq-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 80px;
+          align-items: start;
+        }
+
+        /* Nav desktop links */
+        .nav-links { display: flex; gap: 32px; align-items: center; }
+        .nav-actions { display: flex; gap: 12px; align-items: center; }
+        .nav-hamburger { display: none; }
+        .mobile-menu { display: none; }
+
+        /* Hero CTA row */
+        .hero-cta {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        /* Trade feed columns */
+        .trade-cols {
+          display: grid;
+          grid-template-columns: 1fr 80px 80px 80px 80px;
+        }
+        .trade-head {
+          display: grid;
+          grid-template-columns: 1fr 80px 80px 80px 80px;
+          padding: 10px 20px;
+          font-size: 10px;
+          color: #1e293b;
+          letter-spacing: 0.1em;
+          border-bottom: 1px solid #0a0f1e;
+        }
+
+        /* ── TABLET (≤ 900px) ── */
+        @media (max-width: 900px) {
+          .hero-grid {
+            grid-template-columns: 1fr;
+            gap: 48px;
+          }
+          .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .strategies-grid {
+            grid-template-columns: 1fr;
+          }
+          .steps-grid {
+            grid-template-columns: 1fr;
+            gap: 0;
+          }
+          .testimonials-grid {
+            grid-template-columns: 1fr;
+          }
+          .faq-grid {
+            grid-template-columns: 1fr;
+            gap: 48px;
+          }
+        }
+
+        /* ── MOBILE (≤ 640px) ── */
+        @media (max-width: 640px) {
+          /* Nav */
+          .nav-links { display: none; }
+          .nav-actions { display: none; }
+          .nav-hamburger {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 1px solid #1e293b;
+            border-radius: 6px;
+            width: 36px; height: 36px;
+            cursor: pointer;
+            color: #94a3b8;
+            font-size: 18px;
+            flex-shrink: 0;
+          }
+          .mobile-menu {
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 60px; left: 0; right: 0;
+            background: rgba(3,7,18,0.98);
+            border-bottom: 1px solid #0f172a;
+            backdrop-filter: blur(20px);
+            padding: 20px 24px;
+            gap: 20px;
+            z-index: 98;
+          }
+          .mobile-menu a, .mobile-menu button {
+            width: 100%;
+            text-align: left;
+            font-size: 15px;
+          }
+          .mobile-menu .btn-primary,
+          .mobile-menu .btn-outline {
+            width: 100%;
+            text-align: center;
+            padding: 14px 20px;
+          }
+
+          /* Sections */
+          .section-pad {
+            padding-left: 20px;
+            padding-right: 20px;
+          }
+
+          /* Stats */
+          .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+          }
+          .stat-card {
+            padding: 24px 16px;
+          }
+
+          /* Hero CTA */
+          .hero-cta {
+            flex-direction: column;
+          }
+          .hero-cta button {
+            width: 100%;
+            text-align: center;
+          }
+
+          /* Trade feed — hide AMOUNT & RETURN cols on mobile */
+          .trade-cols {
+            grid-template-columns: 1fr 64px 80px;
+          }
+          .trade-cols .col-amount,
+          .trade-cols .col-return-head { display: none; }
+          .trade-head {
+            grid-template-columns: 1fr 64px 80px;
+          }
+          .trade-head .col-amount-head,
+          .trade-head .col-return-head { display: none; }
+
+          /* Strategy cards */
+          .strategy-card {
+            padding: 20px;
+          }
+
+          /* Steps */
+          .steps-grid > div {
+            border-radius: 12px !important;
+            margin-bottom: 2px;
+          }
+
+          /* Testimonials */
+          .testimonial { padding: 20px; }
+
+          /* FAQ */
+          .faq-item { padding: 16px 0; }
+
+          /* Footer */
+          .footer-inner {
+            flex-direction: column;
+            gap: 20px;
+            text-align: center;
+            align-items: center;
+          }
+        }
       `}</style>
 
       {/* ── NAV ── */}
@@ -342,15 +544,18 @@ export function LandingPage() {
         borderBottom: '1px solid rgba(15,23,42,0.8)',
         backdropFilter: 'blur(20px)',
         background: 'rgba(3,7,18,0.85)',
-        padding: '0 max(24px, calc((100vw - 1200px) / 2))',
+        paddingLeft: 'max(24px, calc((100vw - 1200px) / 2))',
+        paddingRight: 'max(24px, calc((100vw - 1200px) / 2))',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         height: '60px',
       }}>
+        {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{
             width: '28px', height: '28px', borderRadius: '6px',
             background: '#10b981',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
           }}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M2 10 L5 6 L8 8 L12 3" stroke="#030712" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -361,14 +566,16 @@ export function LandingPage() {
           </span>
         </div>
 
-        <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+        {/* Desktop links */}
+        <div className="nav-links">
           <a href="#strategies" className="nav-link">STRATEGIES</a>
           <a href="#how" className="nav-link">HOW IT WORKS</a>
           <a href="#stats" className="nav-link">PERFORMANCE</a>
           <a href="#faq" className="nav-link">FAQ</a>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        {/* Desktop actions */}
+        <div className="nav-actions">
           <button className="btn-outline" style={{ padding: '8px 20px', fontSize: '13px' }}
             onClick={() => navigate('/signin')}>
             SIGN IN
@@ -378,7 +585,24 @@ export function LandingPage() {
             GET STARTED
           </button>
         </div>
+
+        {/* Mobile hamburger */}
+        <button className="nav-hamburger" onClick={() => setMobileMenuOpen(o => !o)}>
+          {mobileMenuOpen ? '✕' : '☰'}
+        </button>
       </nav>
+
+      {/* ── MOBILE MENU ── */}
+      {mobileMenuOpen && (
+        <div className="mobile-menu">
+          <a href="#strategies" className="nav-link" onClick={() => setMobileMenuOpen(false)}>STRATEGIES</a>
+          <a href="#how" className="nav-link" onClick={() => setMobileMenuOpen(false)}>HOW IT WORKS</a>
+          <a href="#stats" className="nav-link" onClick={() => setMobileMenuOpen(false)}>PERFORMANCE</a>
+          <a href="#faq" className="nav-link" onClick={() => setMobileMenuOpen(false)}>FAQ</a>
+          <button className="btn-outline" onClick={() => { setMobileMenuOpen(false); navigate('/signin'); }}>SIGN IN</button>
+          <button className="btn-primary" onClick={() => { setMobileMenuOpen(false); navigate('/signup'); }}>GET STARTED</button>
+        </div>
+      )}
 
       {/* ── TICKER ── */}
       <div style={{
@@ -408,15 +632,10 @@ export function LandingPage() {
       </div>
 
       {/* ── HERO ── */}
-      <section className="grid-bg" style={{
+      <section className="grid-bg section-pad" style={{
         minHeight: '100vh',
         paddingTop: '120px',
         paddingBottom: '80px',
-        padding: '120px max(24px, calc((100vw - 1200px) / 2)) 80px',
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '60px',
-        alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
       }}>
@@ -428,161 +647,159 @@ export function LandingPage() {
           pointerEvents: 'none',
         }} />
 
-        {/* Left: Copy */}
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div className="fade-up" style={{
-            display: 'inline-flex', alignItems: 'center', gap: '8px',
-            background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)',
-            borderRadius: '20px', padding: '6px 14px', marginBottom: '32px',
-          }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }} />
-            <span style={{ fontSize: '11px', color: '#10b981', letterSpacing: '0.1em' }}>
-              NEURAL TRADING ENGINE — LIVE
-            </span>
-          </div>
-
-          <h1 className="fade-up delay-1 display-font" style={{
-            fontSize: 'clamp(40px, 5vw, 72px)',
-            fontWeight: 800,
-            lineHeight: 1.05,
-            color: '#fff',
-            marginBottom: '24px',
-          }}>
-            Your Money<br />
-            Works While<br />
-            <span style={{ color: '#10b981' }}>You Sleep.</span>
-          </h1>
-
-          <p className="fade-up delay-2" style={{
-            fontSize: '16px', color: '#64748b', lineHeight: 1.7,
-            marginBottom: '40px', maxWidth: '440px',
-          }}>
-            AI-powered trading across crypto, forex, gold and equities.
-            Start with $50 and watch intelligent algorithms compound your capital — 24/7, no experience needed.
-          </p>
-
-          <div className="fade-up delay-3" style={{ display: 'flex', gap: '12px', marginBottom: '48px' }}>
-            <button className="btn-primary" onClick={() => navigate('/signup')}>
-              START TRADING FREE →
-            </button>
-            <button className="btn-outline" onClick={() => navigate('/signin')}>
-              VIEW DASHBOARD
-            </button>
-          </div>
-
-          <div className="fade-up delay-4" style={{
-            display: 'flex', gap: '32px',
-            paddingTop: '32px', borderTop: '1px solid #0f172a',
-          }}>
-            {[
-              { n: '80%', l: 'Avg win rate' },
-              { n: '$50', l: 'Min deposit' },
-              { n: '4', l: 'AI strategies' },
-            ].map(s => (
-              <div key={s.l}>
-                <div style={{ fontSize: '24px', fontWeight: 500, color: '#10b981', fontFamily: 'Syne, sans-serif' }}>{s.n}</div>
-                <div style={{ fontSize: '11px', color: '#475569', letterSpacing: '0.06em', marginTop: '2px' }}>{s.l.toUpperCase()}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right: Live trade feed + neural net */}
-        <div className="fade-up delay-2" style={{ position: 'relative' }}>
-          {/* Neural net bg */}
-          <div style={{
-            position: 'absolute', inset: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            pointerEvents: 'none',
-          }}>
-            <NeuralNet />
-          </div>
-
-          {/* Terminal card */}
-          <div className="glow-card" style={{
-            background: 'rgba(10,15,30,0.9)',
-            border: '1px solid #0f172a',
-            borderRadius: '16px',
-            overflow: 'hidden',
-            position: 'relative',
-            zIndex: 1,
-          }}>
-            {/* Terminal header */}
-            <div style={{
-              padding: '14px 20px',
-              borderBottom: '1px solid #0f172a',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        <div className="hero-grid" style={{ position: 'relative', zIndex: 1 }}>
+          {/* Left: Copy */}
+          <div>
+            <div className="fade-up" style={{
+              display: 'inline-flex', alignItems: 'center', gap: '8px',
+              background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)',
+              borderRadius: '20px', padding: '6px 14px', marginBottom: '32px',
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ position: 'relative', width: '8px', height: '8px' }}>
-                  <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#10b981' }} />
-                  <div className="pulse-ring" style={{
-                    position: 'absolute', inset: 0, borderRadius: '50%',
-                    border: '1px solid #10b981',
-                  }} />
-                </div>
-                <span style={{ fontSize: '11px', color: '#64748b', letterSpacing: '0.08em' }}>
-                  LIVE TRADE EXECUTION
-                </span>
-              </div>
-              <span style={{ fontSize: '11px', color: '#1e293b' }}>trader5.ai</span>
+              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }} />
+              <span style={{ fontSize: '11px', color: '#10b981', letterSpacing: '0.1em' }}>
+                NEURAL TRADING ENGINE — LIVE
+              </span>
             </div>
 
-            {/* Column headers */}
-            <div style={{
-              display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 80px',
-              padding: '10px 20px',
-              fontSize: '10px', color: '#1e293b', letterSpacing: '0.1em',
-              borderBottom: '1px solid #0a0f1e',
+            <h1 className="fade-up delay-1 display-font" style={{
+              fontSize: 'clamp(36px, 5vw, 72px)',
+              fontWeight: 800,
+              lineHeight: 1.05,
+              color: '#fff',
+              marginBottom: '24px',
             }}>
-              <span>USER</span><span>ACTION</span><span>ASSET</span><span>AMOUNT</span><span>RETURN</span>
+              Your Money<br />
+              Works While<br />
+              <span style={{ color: '#10b981' }}>You Sleep.</span>
+            </h1>
+
+            <p className="fade-up delay-2" style={{
+              fontSize: '16px', color: '#64748b', lineHeight: 1.7,
+              marginBottom: '40px', maxWidth: '440px',
+            }}>
+              AI-powered trading across crypto, forex, gold and equities.
+              Start with $50 and watch intelligent algorithms compound your capital — 24/7, no experience needed.
+            </p>
+
+            <div className="fade-up delay-3 hero-cta" style={{ marginBottom: '48px' }}>
+              <button className="btn-primary" onClick={() => navigate('/signup')}>
+                START TRADING FREE →
+              </button>
+              <button className="btn-outline" onClick={() => navigate('/signin')}>
+                VIEW DASHBOARD
+              </button>
             </div>
 
-            {/* Trades */}
-            <div style={{ padding: '8px 0' }}>
-              {trades.map((t, i) => (
-                <div key={`${t.user}-${i}`} className="trade-row" style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 80px 80px 80px 80px',
-                  padding: '10px 20px',
-                  fontSize: '12px',
-                  borderBottom: i < trades.length - 1 ? '1px solid #050810' : 'none',
-                  transition: 'background 0.2s',
-                }}>
-                  <span style={{ color: '#475569', fontFamily: 'monospace' }}>{t.user}</span>
-                  <span style={{ color: t.action === 'BUY' ? '#10b981' : '#f97316' }}>{t.action}</span>
-                  <span style={{ color: '#94a3b8' }}>{t.asset}</span>
-                  <span style={{ color: '#e2e8f0' }}>{t.amount}</span>
-                  <span style={{ color: '#10b981' }}>{t.pct}</span>
+            <div className="fade-up delay-4" style={{
+              display: 'flex', gap: '32px', flexWrap: 'wrap',
+              paddingTop: '32px', borderTop: '1px solid #0f172a',
+            }}>
+              {[
+                { n: '80%', l: 'Avg win rate' },
+                { n: '$50', l: 'Min deposit' },
+                { n: '4', l: 'AI strategies' },
+              ].map(s => (
+                <div key={s.l}>
+                  <div style={{ fontSize: '24px', fontWeight: 500, color: '#10b981', fontFamily: 'Syne, sans-serif' }}>{s.n}</div>
+                  <div style={{ fontSize: '11px', color: '#475569', letterSpacing: '0.06em', marginTop: '2px' }}>{s.l.toUpperCase()}</div>
                 </div>
               ))}
             </div>
+          </div>
 
-            {/* Footer */}
+          {/* Right: Live trade feed + neural net */}
+          <div className="fade-up delay-2" style={{ position: 'relative' }}>
             <div style={{
-              padding: '14px 20px',
-              borderTop: '1px solid #0a0f1e',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              fontSize: '11px', color: '#1e293b',
+              position: 'absolute', inset: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              pointerEvents: 'none',
             }}>
-              <span>↑ 12,847 positions active globally</span>
-              <span style={{ color: '#10b981' }}>94.2% uptime ✓</span>
+              <NeuralNet />
+            </div>
+
+            {/* Terminal card */}
+            <div className="glow-card" style={{
+              background: 'rgba(10,15,30,0.9)',
+              border: '1px solid #0f172a',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              position: 'relative',
+              zIndex: 1,
+            }}>
+              {/* Terminal header */}
+              <div style={{
+                padding: '14px 20px',
+                borderBottom: '1px solid #0f172a',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ position: 'relative', width: '8px', height: '8px' }}>
+                    <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#10b981' }} />
+                    <div className="pulse-ring" style={{
+                      position: 'absolute', inset: 0, borderRadius: '50%',
+                      border: '1px solid #10b981',
+                    }} />
+                  </div>
+                  <span style={{ fontSize: '11px', color: '#64748b', letterSpacing: '0.08em' }}>
+                    LIVE TRADE EXECUTION
+                  </span>
+                </div>
+                <span style={{ fontSize: '11px', color: '#1e293b' }}>trader5.ai</span>
+              </div>
+
+              {/* Column headers */}
+              <div className="trade-head">
+                <span>USER</span>
+                <span>ACTION</span>
+                <span>ASSET</span>
+                <span className="col-amount-head">AMOUNT</span>
+                <span className="col-return-head">RETURN</span>
+              </div>
+
+              {/* Trades */}
+              <div style={{ padding: '8px 0' }}>
+                {trades.map((t, i) => (
+                  <div key={`${t.user}-${i}`} className="trade-row trade-cols" style={{
+                    padding: '10px 20px',
+                    fontSize: '12px',
+                    borderBottom: i < trades.length - 1 ? '1px solid #050810' : 'none',
+                  }}>
+                    <span style={{ color: '#475569', fontFamily: 'monospace' }}>{t.user}</span>
+                    <span style={{ color: t.action === 'BUY' ? '#10b981' : '#f97316' }}>{t.action}</span>
+                    <span style={{ color: '#94a3b8' }}>{t.asset}</span>
+                    <span className="col-amount" style={{ color: '#e2e8f0' }}>{t.amount}</span>
+                    <span style={{ color: '#10b981' }}>{t.pct}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Footer */}
+              <div style={{
+                padding: '14px 20px',
+                borderTop: '1px solid #0a0f1e',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                fontSize: '11px', color: '#1e293b',
+                flexWrap: 'wrap', gap: '8px',
+              }}>
+                <span>↑ 12,847 positions active globally</span>
+                <span style={{ color: '#10b981' }}>94.2% uptime ✓</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── STATS ── */}
-      <section id="stats" ref={statsRef} style={{
-        padding: '80px max(24px, calc((100vw - 1200px) / 2))',
+      <section id="stats" ref={statsRef} className="section-pad" style={{
+        paddingTop: '80px', paddingBottom: '80px',
         borderTop: '1px solid #0f172a', borderBottom: '1px solid #0f172a',
         background: 'rgba(10,15,25,0.5)',
       }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+        <div className="stats-grid">
           {STATS.map((s, i) => (
             <div key={s.label} className="stat-card">
               <div style={{
-                fontSize: 'clamp(36px, 4vw, 52px)',
+                fontSize: 'clamp(32px, 4vw, 52px)',
                 fontFamily: 'Syne, sans-serif',
                 fontWeight: 800,
                 color: '#10b981',
@@ -600,9 +817,7 @@ export function LandingPage() {
       </section>
 
       {/* ── STRATEGIES ── */}
-      <section id="strategies" style={{
-        padding: '100px max(24px, calc((100vw - 1200px) / 2))',
-      }}>
+      <section id="strategies" className="section-pad" style={{ paddingTop: '100px', paddingBottom: '100px' }}>
         <div style={{ textAlign: 'center', marginBottom: '64px' }}>
           <div style={{
             display: 'inline-block', fontSize: '11px', color: '#10b981',
@@ -612,7 +827,7 @@ export function LandingPage() {
             CHOOSE YOUR STRATEGY
           </div>
           <h2 className="display-font" style={{
-            fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800,
+            fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 800,
             color: '#fff', lineHeight: 1.1,
           }}>
             Four Ways to Grow.<br />
@@ -620,7 +835,7 @@ export function LandingPage() {
           </h2>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+        <div className="strategies-grid">
           {STRATEGIES.map(s => (
             <div
               key={s.name}
@@ -628,7 +843,7 @@ export function LandingPage() {
               style={{ '--accent': s.color } as any}
               onClick={() => navigate('/signup')}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', gap: '12px' }}>
                 <div>
                   <div style={{
                     fontSize: '10px', letterSpacing: '0.12em',
@@ -643,7 +858,7 @@ export function LandingPage() {
                     {s.name}
                   </h3>
                 </div>
-                <div style={{ textAlign: 'right' }}>
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
                   <div style={{ fontSize: '24px', fontWeight: 500, color: s.color, fontFamily: 'Syne, sans-serif' }}>
                     {s.ret}
                   </div>
@@ -656,7 +871,7 @@ export function LandingPage() {
               </p>
 
               <div style={{
-                display: 'flex', gap: '24px',
+                display: 'flex', gap: '24px', flexWrap: 'wrap',
                 paddingTop: '20px', borderTop: `1px solid ${s.color}15`,
               }}>
                 <div>
@@ -668,10 +883,7 @@ export function LandingPage() {
                   <div style={{ fontSize: '10px', color: '#475569', letterSpacing: '0.08em', marginTop: '2px' }}>DURATION</div>
                 </div>
                 <div style={{ marginLeft: 'auto', alignSelf: 'flex-end' }}>
-                  <span style={{
-                    fontSize: '11px', color: s.color,
-                    letterSpacing: '0.1em',
-                  }}>START →</span>
+                  <span style={{ fontSize: '11px', color: s.color, letterSpacing: '0.1em' }}>START →</span>
                 </div>
               </div>
             </div>
@@ -680,8 +892,8 @@ export function LandingPage() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section id="how" style={{
-        padding: '100px max(24px, calc((100vw - 1200px) / 2))',
+      <section id="how" className="section-pad" style={{
+        paddingTop: '100px', paddingBottom: '100px',
         background: 'rgba(10,15,25,0.5)',
         borderTop: '1px solid #0f172a',
       }}>
@@ -690,28 +902,25 @@ export function LandingPage() {
             THE PROCESS
           </div>
           <h2 className="display-font" style={{
-            fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, color: '#fff',
+            fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 800, color: '#fff',
           }}>
             Up and running in <span style={{ color: '#10b981' }}>3 minutes.</span>
           </h2>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2px' }}>
+        <div className="steps-grid">
           {[
             {
               n: '01', title: 'Create Account',
               body: 'Sign up in seconds. No KYC required for initial access. Your identity stays private.',
-              icon: '◉',
             },
             {
               n: '02', title: 'Fund Your Wallet',
               body: 'Deposit Bitcoin to your unique wallet address. Funds appear in your account after 1 confirmation.',
-              icon: '⬡',
             },
             {
               n: '03', title: 'Choose a Strategy',
               body: 'Select from 4 AI-powered strategies. Conservative is free. Premium strategies unlock from $50/month.',
-              icon: '◈',
             },
           ].map((step, i) => (
             <div key={step.n} style={{
@@ -743,8 +952,8 @@ export function LandingPage() {
       </section>
 
       {/* ── TESTIMONIALS ── */}
-      <section style={{
-        padding: '100px max(24px, calc((100vw - 1200px) / 2))',
+      <section className="section-pad" style={{
+        paddingTop: '100px', paddingBottom: '100px',
         borderTop: '1px solid #0f172a',
       }}>
         <div style={{ textAlign: 'center', marginBottom: '64px' }}>
@@ -752,25 +961,22 @@ export function LandingPage() {
             COMMUNITY
           </div>
           <h2 className="display-font" style={{
-            fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, color: '#fff',
+            fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 800, color: '#fff',
           }}>
             What our traders say.
           </h2>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+        <div className="testimonials-grid">
           {[
             { name: 'Marcus T.', role: 'Conservative Growth', profit: '+$340 in 3 weeks', text: 'Started with $200, made $340 profit. The AI never stopped working even when I was sleeping. Absolutely remarkable.' },
-            { name: 'Priya S.', role: 'Balanced Momentum', profit: '+$1,200 in 2 weeks', text: 'The subscription paid for itself in the first 3 trades. I\'ve been compounding ever since. This platform is the real deal.' },
+            { name: 'Priya S.', role: 'Balanced Momentum', profit: '+$1,200 in 2 weeks', text: "The subscription paid for itself in the first 3 trades. I've been compounding ever since. This platform is the real deal." },
             { name: 'David K.', role: 'DeFi Yield', profit: '+$890 in 2 weeks', text: 'The zero-loss guarantee on DeFi is what sold me. Slow and steady — exactly what I needed. Highly recommend.' },
           ].map(t => (
             <div key={t.name} className="testimonial">
-              <div style={{
-                fontSize: '24px', color: '#10b981', marginBottom: '16px',
-                lineHeight: 1, fontFamily: 'serif',
-              }}>"</div>
+              <div style={{ fontSize: '24px', color: '#10b981', marginBottom: '16px', lineHeight: 1, fontFamily: 'serif' }}>"</div>
               <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: 1.7, marginBottom: '24px' }}>{t.text}</p>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '8px' }}>
                 <div>
                   <div style={{ fontSize: '14px', color: '#e2e8f0', fontWeight: 500 }}>{t.name}</div>
                   <div style={{ fontSize: '11px', color: '#475569', marginTop: '2px' }}>{t.role}</div>
@@ -785,15 +991,15 @@ export function LandingPage() {
       </section>
 
       {/* ── FAQ ── */}
-      <section id="faq" style={{
-        padding: '100px max(24px, calc((100vw - 1200px) / 2))',
+      <section id="faq" className="section-pad" style={{
+        paddingTop: '100px', paddingBottom: '100px',
         background: 'rgba(10,15,25,0.5)',
         borderTop: '1px solid #0f172a',
       }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'start' }}>
+        <div className="faq-grid">
           <div>
             <div style={{ fontSize: '11px', color: '#10b981', letterSpacing: '0.15em', marginBottom: '16px' }}>FAQ</div>
-            <h2 className="display-font" style={{ fontSize: 'clamp(28px, 3.5vw, 44px)', fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>
+            <h2 className="display-font" style={{ fontSize: 'clamp(24px, 3.5vw, 44px)', fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>
               Everything you<br />need to know.
             </h2>
             <p style={{ fontSize: '14px', color: '#475569', marginTop: '20px', lineHeight: 1.7 }}>
@@ -808,16 +1014,16 @@ export function LandingPage() {
             {[
               { q: 'Is my principal safe?', a: 'Our simulation engine is designed so your deposited capital is never at risk. Any losses only come from accumulated profits, and the first 5 trades always close positive.' },
               { q: 'How does the AI make trades?', a: 'The neural engine analyzes real market candles from multiple assets, generates buy/sell signals based on momentum and sentiment, and executes at optimal entry points 24/7.' },
-              { q: 'Can I withdraw at any time?', a: 'You can pause or stop a session anytime, but withdrawals before the minimum strategy duration apply the session lock — you\'ll be shown the exact unlock time.' },
+              { q: 'Can I withdraw at any time?', a: "You can pause or stop a session anytime, but withdrawals before the minimum strategy duration apply the session lock — you'll be shown the exact unlock time." },
               { q: 'How do referrals work?', a: 'Share your referral link. You earn $0.50 on every deposit your referrals make, plus 0.15% of their trading profits. Earnings go to your referral balance and can be transferred to your main balance anytime.' },
-              { q: 'What currencies are supported?', a: 'Deposits are in Bitcoin (BTC). Your trading balance is denominated in USD. We\'re adding USDT support soon.' },
+              { q: 'What currencies are supported?', a: "Deposits are in Bitcoin (BTC). Your trading balance is denominated in USD. We're adding USDT support soon." },
             ].map((faq, i) => (
               <div key={i} className="faq-item">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
                   <span className="faq-q" style={{ fontSize: '15px', color: '#e2e8f0', fontWeight: 500, transition: 'color 0.2s' }}>
                     {faq.q}
                   </span>
-                  <span style={{ color: '#10b981', fontSize: '18px', lineHeight: 1 }}>+</span>
+                  <span style={{ color: '#10b981', fontSize: '18px', lineHeight: 1, flexShrink: 0 }}>+</span>
                 </div>
                 <p style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.7, marginTop: '12px' }}>{faq.a}</p>
               </div>
@@ -827,8 +1033,8 @@ export function LandingPage() {
       </section>
 
       {/* ── CTA BANNER ── */}
-      <section style={{
-        padding: '100px max(24px, calc((100vw - 1200px) / 2))',
+      <section className="section-pad" style={{
+        paddingTop: '100px', paddingBottom: '100px',
         borderTop: '1px solid #0f172a',
         textAlign: 'center',
         position: 'relative', overflow: 'hidden',
@@ -852,7 +1058,7 @@ export function LandingPage() {
             </span>
           </div>
           <h2 className="display-font" style={{
-            fontSize: 'clamp(36px, 5vw, 72px)', fontWeight: 800, color: '#fff',
+            fontSize: 'clamp(32px, 5vw, 72px)', fontWeight: 800, color: '#fff',
             lineHeight: 1.05, marginBottom: '24px',
           }}>
             Your capital deserves<br />
@@ -861,7 +1067,7 @@ export function LandingPage() {
           <p style={{ fontSize: '16px', color: '#64748b', marginBottom: '40px', maxWidth: '480px', margin: '0 auto 40px' }}>
             Join thousands of traders already compounding returns with AI. Start free with the Conservative strategy — no subscription required.
           </p>
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button className="btn-primary" style={{ fontSize: '15px', padding: '16px 40px' }} onClick={() => navigate('/signup')}>
               CREATE FREE ACCOUNT →
             </button>
@@ -873,32 +1079,33 @@ export function LandingPage() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{
-        padding: '40px max(24px, calc((100vw - 1200px) / 2))',
+      <footer className="section-pad" style={{
+        paddingTop: '40px', paddingBottom: '40px',
         borderTop: '1px solid #0f172a',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{
-            width: '22px', height: '22px', borderRadius: '5px',
-            background: '#10b981',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
-              <path d="M2 10 L5 6 L8 8 L12 3" stroke="#030712" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+        <div className="footer-inner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{
+              width: '22px', height: '22px', borderRadius: '5px',
+              background: '#10b981',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
+                <path d="M2 10 L5 6 L8 8 L12 3" stroke="#030712" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: '15px', color: '#fff' }}>
+              trader<span style={{ color: '#10b981' }}>5</span>
+            </span>
           </div>
-          <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: '15px', color: '#fff' }}>
-            trader<span style={{ color: '#10b981' }}>5</span>
-          </span>
-        </div>
-        <div style={{ display: 'flex', gap: '24px' }}>
-          <a href="#" className="nav-link">Privacy</a>
-          <a href="#" className="nav-link">Terms</a>
-          <a href="#" className="nav-link">Risk Disclosure</a>
-        </div>
-        <div style={{ fontSize: '11px', color: '#1e293b', letterSpacing: '0.06em' }}>
-          © 2026 TRADER5. ALL RIGHTS RESERVED.
+          <div style={{ display: 'flex', gap: '24px' }}>
+            <a href="#" className="nav-link">Privacy</a>
+            <a href="#" className="nav-link">Terms</a>
+            <a href="#" className="nav-link">Risk Disclosure</a>
+          </div>
+          <div style={{ fontSize: '11px', color: '#1e293b', letterSpacing: '0.06em' }}>
+            © 2026 TRADER5. ALL RIGHTS RESERVED.
+          </div>
         </div>
       </footer>
     </div>
