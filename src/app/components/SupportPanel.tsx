@@ -4,8 +4,7 @@ import {
   Clock, CheckCircle, AlertCircle, RefreshCw, Inbox,
 } from 'lucide-react';
 
-const API_BASE = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL)
-  ?? 'http://localhost:4000';
+const API_BASE = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) ?? 'https://ai.traderfive.com';
 
 const CATEGORIES = [
   { id: 'deposit',    label: 'Deposit Issue'     },

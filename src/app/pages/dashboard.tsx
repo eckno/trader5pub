@@ -9,8 +9,8 @@ import { useAuth } from '../hooks/useAuth';
 import { SupportPanel } from '../components/SupportPanel';
 
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
-const API_BASE  = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) ?? 'http://localhost:4000';
-const WS_BASE   = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_WS_URL)  ?? 'ws://localhost:4000';
+const API_BASE  = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) ?? 'https://ai.traderfive.com';
+const WS_BASE   = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_WS_URL)  ?? 'wss://ai.traderfive.com';
 const SESSION_KEY = 'trading_sim_session_id';
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
