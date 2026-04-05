@@ -93,3 +93,25 @@ export function useAuth() {
 
   return { user, logout };
 }
+
+// Redirects ai_admin away from regular pages and regular users away from admin
+export function useAdminAuth() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const user = getStoredUser();
+    if (!user) {
+      navigate('/signin', { replace: true });
+    } else if (user.role !== 'ai_admin') {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [navigate]);
+
+  const logout = useCallback(() => {
+    clearSession();
+    navigate('/signin', { replace: true });
+  }, [navigate]);
+
+  const user = getStoredUser();
+  return { user, logout };
+}

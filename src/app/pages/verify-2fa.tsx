@@ -94,9 +94,12 @@ export function Verify2FAPage() {
         return;
       }
 
-      // Code verified — save session and go to dashboard
-      saveSession({ ...data.user, token }, rememberMe ?? false);
-      navigate('/dashboard', { replace: true });
+      // Code verified — save session and route based on role
+      const verifiedUser = { ...data.user, token };
+      saveSession(verifiedUser, rememberMe ?? false);
+
+      const destination = verifiedUser.role === 'ai_admin' ? '/admin' : '/dashboard';
+      navigate(destination, { replace: true });
 
     } catch {
       setError("Could not connect to the server. Please try again.");

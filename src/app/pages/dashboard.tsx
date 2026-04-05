@@ -3,8 +3,10 @@ import {
   Bot, TrendingUp, TrendingDown, Activity, DollarSign, Zap,
   Play, Pause, Brain, Target, Wifi, WifiOff, RefreshCw, AlertCircle,
   Shield, Cpu, Radio, X, ArrowDownLeft, ArrowUpRight, Lock,
+  Clock, Download, Upload,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { SupportPanel } from '../components/SupportPanel';
 
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
 const API_BASE  = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) ?? 'https://ai.traderfive.com';
@@ -154,6 +156,23 @@ function AITradingInner({ user, token, logout }: { user: any; token: string; log
   const [referralBalance, setReferralBalance] = useState<number>(0);
   const [withdrawingReferral, setWithdrawingReferral] = useState(false);
 
+  // History panel
+  const [showHistory, setShowHistory]     = useState(false);
+  const [historyTab, setHistoryTab]       = useState<'trades' | 'deposits' | 'withdrawals'>('trades');
+  const [historyData, setHistoryData]     = useState<{ trades: any[]; deposits: any[]; withdrawals: any[] } | null>(null);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  function openHistory() {
+    setShowHistory(true);
+    if (historyData) return; // already loaded
+    setHistoryLoading(true);
+    fetch(`${API_BASE}/api/users/${encodeURIComponent(user.email)}/history`)
+      .then(r => r.json())
+      .then(d => { if (d.success) setHistoryData(d.data); })
+      .catch(() => {})
+      .finally(() => setHistoryLoading(false));
+  }
+
   // Drawer states
   const [showReceive, setShowReceive] = useState(false);
   const [btcAddress, setBtcAddress]   = useState<string | null>(null);
@@ -255,6 +274,24 @@ function AITradingInner({ user, token, logout }: { user: any; token: string; log
   }
 
   function handleSendConfirm() {
+    fetch(`${API_BASE}/api/users/${encodeURIComponent(user.email)}`)
+      .then(r => r.json())
+      .then(async data => {
+        const u   = data?.data ?? {};
+        const log = [...(u.withdrawal_log ?? []), {
+          amount:    Number(sendForm.amount),
+          network:   sendForm.network,
+          address:   sendForm.address,
+          status:    'pending',
+          createdAt: new Date().toISOString(),
+        }];
+        await fetch(`${API_BASE}/api/users/update`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ ...u, withdrawal_log: log }),
+        });
+        setHistoryData(null);
+      }).catch(() => {});
     setSendStep('done');
   }
 
@@ -529,6 +566,7 @@ function AITradingInner({ user, token, logout }: { user: any; token: string; log
 
   // ── RENDER ────────────────────────────────────────────────────────────────
   return (
+    <>
     <div className="min-h-screen bg-slate-950 text-slate-100" style={{ fontFamily: "'DM Mono', 'Fira Code', 'Courier New', monospace" }}>
 
       {/* Ambient background grid */}
@@ -629,6 +667,16 @@ function AITradingInner({ user, token, logout }: { user: any; token: string; log
                 SEND
               </button>
             </div>
+
+            {/* History */}
+            <button
+              onClick={openHistory}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold transition-all border border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-500 hover:text-white"
+              title="View history"
+            >
+              <Clock className="w-4 h-4" />
+              HISTORY
+            </button>
 
             {/* Main CTA */}
             <button
@@ -959,6 +1007,212 @@ function AITradingInner({ user, token, logout }: { user: any; token: string; log
                   </div>
                 )}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── HISTORY PANEL ── */}
+        {showHistory && (
+          <div className="fixed inset-0 z-50 flex flex-col bg-slate-950">
+            {/* Top accent */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 flex-shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                  <Clock className="w-4 h-4 text-emerald-400" />
+                </div>
+                <div>
+                  <p className="text-white font-bold text-sm">Transaction History</p>
+                  <p className="text-xs text-slate-500">All your trades, deposits and withdrawals</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowHistory(false)}
+                className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors"
+              >
+                <X className="w-4 h-4 text-slate-400" />
+              </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex gap-1 px-6 py-3 border-b border-slate-800 flex-shrink-0">
+              {([
+                { id: 'trades',      label: 'Trades',      icon: Activity },
+                { id: 'deposits',    label: 'Deposits',    icon: Download },
+                { id: 'withdrawals', label: 'Withdrawals', icon: Upload   },
+              ] as const).map(tab => {
+                const Icon = tab.icon;
+                const count = historyData?.[tab.id]?.length ?? 0;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setHistoryTab(tab.id)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                      historyTab === tab.id
+                        ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400'
+                        : 'text-slate-500 hover:text-slate-300 border border-transparent'
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    {tab.label.toUpperCase()}
+                    {count > 0 && (
+                      <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                        historyTab === tab.id ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-600'
+                      }`}>{count}</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto px-6 py-4">
+              {historyLoading ? (
+                <div className="flex items-center justify-center h-40 gap-3 text-slate-500">
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                  <span className="text-sm">Loading history…</span>
+                </div>
+              ) : (
+
+                // ── TRADES TAB ──
+                historyTab === 'trades' && (
+                  <div className="space-y-2">
+                    {!historyData?.trades?.length ? (
+                      <EmptyState icon={Activity} message="No trades yet. Start a session to begin trading." />
+                    ) : (
+                      <>
+                        {/* Summary row */}
+                        <div className="grid grid-cols-3 gap-3 mb-4">
+                          {[
+                            {
+                              label: 'Total Trades',
+                              value: historyData.trades.length,
+                              color: 'text-white',
+                            },
+                            {
+                              label: 'Total Profit',
+                              value: `${historyData.trades.reduce((s: number, t: any) => s + (t.pnl ?? 0), 0) >= 0 ? '+' : '-'}$${fmt(Math.abs(historyData.trades.reduce((s: number, t: any) => s + (t.pnl ?? 0), 0)))}`,
+                              color: historyData.trades.reduce((s: number, t: any) => s + (t.pnl ?? 0), 0) >= 0 ? 'text-emerald-400' : 'text-red-400',
+                            },
+                            {
+                              label: 'Win Rate',
+                              value: `${fmt(historyData.trades.filter((t: any) => t.pnl > 0).length / Math.max(historyData.trades.length, 1) * 100)}%`,
+                              color: 'text-cyan-400',
+                            },
+                          ].map(s => (
+                            <div key={s.label} className="p-3 bg-slate-900 border border-slate-800 rounded-xl">
+                              <p className="text-xs text-slate-500 mb-1">{s.label}</p>
+                              <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Trade rows */}
+                        {historyData.trades.map((trade: any, i: number) => (
+                          <div key={i} className="flex items-center gap-4 p-4 bg-slate-900/60 border border-slate-800 rounded-xl hover:border-slate-700 transition-colors">
+                            <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                              trade.pnl >= 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
+                            }`}>
+                              {trade.pnl >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-white font-semibold">{trade.asset}</span>
+                                <span className={`text-xs px-2 py-0.5 rounded font-bold ${
+                                  trade.side === 'LONG' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
+                                }`}>{trade.side}</span>
+                                <span className="text-xs text-slate-600">{trade.reason?.replace('_', ' ')}</span>
+                              </div>
+                              <div className="flex items-center gap-3 mt-1">
+                                <span className="text-xs text-slate-500">Entry: <span className="text-slate-300">{fmt(trade.entryPrice)}</span></span>
+                                <span className="text-xs text-slate-500">Exit: <span className="text-slate-300">{fmt(trade.exitPrice)}</span></span>
+                                <span className="text-xs text-slate-600">{trade.strategy}</span>
+                              </div>
+                            </div>
+                            <div className="text-right flex-shrink-0">
+                              <p className={`text-sm font-bold ${trade.pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                                {trade.pnl >= 0 ? '+' : '-'}${fmt(Math.abs(trade.pnl))}
+                              </p>
+                              <p className="text-xs text-slate-600 mt-0.5">
+                                {new Date(trade.closedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                )
+              )}
+
+              {/* ── DEPOSITS TAB ── */}
+              {!historyLoading && historyTab === 'deposits' && (
+                <div className="space-y-2">
+                  {!historyData?.deposits?.length ? (
+                    <EmptyState icon={Download} message="No deposits yet. Click Receive to fund your account with Bitcoin." />
+                  ) : (
+                    historyData.deposits.map((d: any, i: number) => (
+                      <div key={i} className="flex items-center gap-4 p-4 bg-slate-900/60 border border-slate-800 rounded-xl hover:border-slate-700 transition-colors">
+                        <div className="w-9 h-9 rounded-lg bg-orange-500/10 text-orange-400 flex items-center justify-center flex-shrink-0">
+                          <Download className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-white font-semibold">Bitcoin Deposit</p>
+                          <p className="text-xs text-slate-500 font-mono truncate mt-0.5">
+                            {d.txHash ? `tx: ${d.txHash.slice(0, 16)}…${d.txHash.slice(-8)}` : 'Confirmed'}
+                          </p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-sm font-bold text-emerald-400">+${fmt(d.usdAmount ?? 0)}</p>
+                          <p className="text-xs text-slate-600 mt-0.5">
+                            {d.satoshis ? `${d.satoshis.toLocaleString()} sats` : ''}
+                          </p>
+                          <p className="text-xs text-slate-600">
+                            {d.createdAt ? new Date(d.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {/* ── WITHDRAWALS TAB ── */}
+              {!historyLoading && historyTab === 'withdrawals' && (
+                <div className="space-y-2">
+                  {!historyData?.withdrawals?.length ? (
+                    <EmptyState icon={Upload} message="No withdrawals yet." />
+                  ) : (
+                    historyData.withdrawals.map((w: any, i: number) => (
+                      <div key={i} className="flex items-center gap-4 p-4 bg-slate-900/60 border border-slate-800 rounded-xl hover:border-slate-700 transition-colors">
+                        <div className="w-9 h-9 rounded-lg bg-slate-700/50 text-slate-400 flex items-center justify-center flex-shrink-0">
+                          <Upload className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-white font-semibold">
+                            {w.source === 'referral' ? 'Referral Withdrawal' : `Send — ${w.network ?? 'BTC'}`}
+                          </p>
+                          {w.address && (
+                            <p className="text-xs text-slate-500 font-mono truncate mt-0.5">
+                              to: {w.address.slice(0, 14)}…{w.address.slice(-8)}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-sm font-bold text-slate-300">
+                            -${fmt(Math.abs(w.amount ?? 0))}
+                          </p>
+                          <p className="text-xs text-slate-600 mt-0.5">
+                            {w.createdAt ? new Date(w.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1467,6 +1721,22 @@ function AITradingInner({ user, token, logout }: { user: any; token: string; log
         </div>
 
       </div>
+    </div>
+
+    {/* ── SUPPORT PANEL (floating) ── */}
+    <SupportPanel user={user} token={token} />
+    </>
+  );
+}
+
+// ─── EMPTY STATE HELPER ───────────────────────────────────────────────────────
+function EmptyState({ icon: Icon, message }: { icon: any; message: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 gap-4">
+      <div className="w-14 h-14 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center">
+        <Icon className="w-6 h-6 text-slate-600" />
+      </div>
+      <p className="text-sm text-slate-600 text-center max-w-xs leading-relaxed">{message}</p>
     </div>
   );
 }

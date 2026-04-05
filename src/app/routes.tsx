@@ -6,6 +6,7 @@ import { ForgotPasswordPage } from "./pages/forgot-password";
 import { OnboardingPage } from "./pages/onboarding";
 import { DashboardPage } from "./pages/dashboard";
 import { Verify2FAPage } from "./pages/verify-2fa";
+import { AdminDashboard } from "./pages/admin";
 
 export const router = createBrowserRouter([
   {
@@ -35,5 +36,9 @@ export const router = createBrowserRouter([
   {
     path: "/dashboard",
     Component: DashboardPage,
+  },
+  {
+    path: "/admin",
+    Component: AdminDashboard,
   },
 ]);
