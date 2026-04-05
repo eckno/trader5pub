@@ -9,8 +9,8 @@ import { useAuth } from '../hooks/useAuth';
 import { SupportPanel } from '../components/SupportPanel';
 
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
-const API_BASE  = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) ?? 'https://ai.traderfive.com';
-const WS_BASE   = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_WS_URL)  ?? 'wss://ai.traderfive.com';
+const API_BASE  = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) ?? 'http://localhost:4000';
+const WS_BASE   = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_WS_URL)  ?? 'ws://localhost:4000';
 const SESSION_KEY = 'trading_sim_session_id';
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
@@ -578,13 +578,13 @@ function AITradingInner({ user, token, logout }: { user: any; token: string; log
       {/* Top glow */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[600px] h-[1px] bg-emerald-500/40 blur-sm pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto px-4 py-6 space-y-5">
+      <div className="relative max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-5">
 
         {/* ── HEADER ── */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          {/* Logo */}
           <div className="flex items-center gap-3">
-            {/* AI brain orb */}
-            <div className="relative w-11 h-11">
+            <div className="relative w-11 h-11 flex-shrink-0">
               <div className="absolute inset-0 rounded-full bg-emerald-500/10 border border-emerald-500/30" />
               {isRunning && (
                 <>
@@ -604,92 +604,71 @@ function AITradingInner({ user, token, logout }: { user: any; token: string; log
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Controls — horizontally scrollable on mobile */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-0.5 sm:pb-0 flex-nowrap">
             {/* WS status */}
             {session && (
-              <div className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border ${
+              <div className={`flex-shrink-0 flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-full border ${
                 wsConnected
                   ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/5'
                   : 'text-slate-500 border-slate-700 bg-slate-900'
               }`}>
                 {wsConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
-                {wsConnected ? 'LIVE' : 'RECONNECTING'}
+                <span className="hidden xs:inline">{wsConnected ? 'LIVE' : '…'}</span>
               </div>
             )}
 
-            {/* Balance + fund actions */}
-            <div className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-xl border border-slate-700 bg-slate-900">
-              {/* Balance display */}
-              <div className="px-2">
-                <p className="text-xs text-slate-500 tracking-widest uppercase leading-none mb-0.5">Balance</p>
-                <p className="text-lg font-bold text-white leading-none tracking-tight">
-                  ${fmt(userBalance ?? 0)}
-                </p>
+            {/* Balance pill */}
+            <div className="flex-shrink-0 flex items-center gap-1.5 pl-2 pr-1 py-1 rounded-xl border border-slate-700 bg-slate-900">
+              <div className="px-1">
+                <p className="text-xs text-slate-500 uppercase leading-none mb-0.5">Bal</p>
+                <p className="text-sm font-bold text-white leading-none">${fmt(userBalance ?? 0)}</p>
               </div>
-
-              {/* Referral balance — only shown when non-zero */}
               {referralBalance > 0 && (
                 <>
-                  <div className="w-px h-8 bg-slate-700/60" />
-                  <div className="px-2">
-                    <p className="text-xs text-violet-400/70 tracking-widest uppercase leading-none mb-0.5">Referral</p>
-                    <button
-                      onClick={withdrawReferralBalance}
-                      disabled={withdrawingReferral}
-                      title="Click to transfer to main balance"
-                      className="text-lg font-bold text-violet-400 leading-none tracking-tight hover:text-violet-300 transition-colors disabled:opacity-50"
-                    >
+                  <div className="w-px h-6 bg-slate-700/60" />
+                  <div className="px-1">
+                    <p className="text-xs text-violet-400/70 uppercase leading-none mb-0.5">Ref</p>
+                    <button onClick={withdrawReferralBalance} disabled={withdrawingReferral}
+                      className="text-sm font-bold text-violet-400 leading-none hover:text-violet-300 transition-colors disabled:opacity-50"
+                      title="Tap to transfer to main balance">
                       {withdrawingReferral ? '…' : `$${fmt(referralBalance)}`}
                     </button>
                   </div>
                 </>
               )}
-
-              <div className="w-px h-8 bg-slate-700/60" />
-
-              {/* Receive */}
-              <button
-                onClick={() => { openReceive(); }}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-emerald-400 hover:bg-emerald-500/10 border border-transparent hover:border-emerald-500/20 transition-all"
-                title="Add funds"
-              >
+              <div className="w-px h-6 bg-slate-700/60" />
+              <button onClick={openReceive}
+                className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-bold text-emerald-400 hover:bg-emerald-500/10 transition-all"
+                title="Receive">
                 <ArrowDownLeft className="w-3.5 h-3.5" />
-                RECEIVE
+                <span className="hidden sm:inline">RECV</span>
               </button>
-
-              {/* Send */}
-              <button
-                onClick={() => { setShowSend(true); setSendStep('form'); }}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-slate-400 hover:bg-slate-700/50 border border-transparent hover:border-slate-600 transition-all"
-                title="Withdraw funds"
-              >
+              <button onClick={() => { setShowSend(true); setSendStep('form'); }}
+                className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:bg-slate-700/50 transition-all"
+                title="Send">
                 <ArrowUpRight className="w-3.5 h-3.5" />
-                SEND
+                <span className="hidden sm:inline">SEND</span>
               </button>
             </div>
 
             {/* History */}
-            <button
-              onClick={openHistory}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold transition-all border border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-500 hover:text-white"
-              title="View history"
-            >
+            <button onClick={openHistory}
+              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all border border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-500 hover:text-white"
+              title="History">
               <Clock className="w-4 h-4" />
-              HISTORY
+              <span className="hidden sm:inline">HISTORY</span>
             </button>
 
-            {/* Main CTA */}
-            <button
-              onClick={handleAiToggle}
-              disabled={loading}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold transition-all border ${
+            {/* Start/Pause */}
+            <button onClick={handleAiToggle} disabled={loading}
+              className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold transition-all border ${
                 isRunning
                   ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/20'
                   : 'bg-slate-800 border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white'
-              }`}
-            >
+              }`}>
               {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              {loading ? 'PROCESSING…' : isRunning ? 'PAUSE' : session ? 'RESUME' : 'START'}
+              {loading ? '…' : isRunning ? 'PAUSE' : session ? 'RESUME' : 'START'}
             </button>
           </div>
         </div>
@@ -1344,7 +1323,7 @@ function AITradingInner({ user, token, logout }: { user: any; token: string; log
         )}
 
         {/* ── STATS ROW ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           {[
             {
               label: 'NET P&L',
@@ -1403,7 +1382,7 @@ function AITradingInner({ user, token, logout }: { user: any; token: string; log
 
         {/* ── ACTIVE SESSION STRIP ── */}
         {session && (
-          <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
+          <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
             <div className="flex items-center gap-3">
               {/* Scan orb */}
               <div className="relative w-8 h-8 flex-shrink-0">
@@ -1442,7 +1421,7 @@ function AITradingInner({ user, token, logout }: { user: any; token: string; log
         )}
 
         {/* ── MAIN GRID ── */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-5">
 
           {/* LEFT: Strategy selector */}
           <div className="xl:col-span-1 space-y-3">
@@ -1619,25 +1598,25 @@ function AITradingInner({ user, token, logout }: { user: any; token: string; log
                   )}
                 </div>
               ) : (
-                <div className="divide-y divide-slate-800/60">
+                <div className="divide-y divide-slate-800/60 overflow-x-auto">
                   {/* Header */}
-                  <div className="grid grid-cols-5 px-5 py-2.5 text-xs text-slate-600 tracking-widest uppercase">
+                  <div className="grid grid-cols-3 sm:grid-cols-5 px-4 sm:px-5 py-2.5 text-xs text-slate-600 tracking-widest uppercase min-w-0">
                     <span>Pair</span>
-                    <span className="text-right">Entry</span>
-                    <span className="text-right">Current</span>
+                    <span className="text-right hidden sm:block">Entry</span>
+                    <span className="text-right hidden sm:block">Current</span>
                     <span className="text-right">Size</span>
                     <span className="text-right">P&L</span>
                   </div>
                   {activeTrades.map((trade, index) => (
-                    <div key={index} className="grid grid-cols-5 px-5 py-3.5 hover:bg-slate-800/30 transition-colors">
+                    <div key={index} className="grid grid-cols-3 sm:grid-cols-5 px-4 sm:px-5 py-3 hover:bg-slate-800/30 transition-colors min-w-0">
                       <div className="flex items-center gap-2">
-                        <div className={`w-1.5 h-6 rounded-full ${trade.isProfit ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                        <span className="text-sm font-semibold text-white">{trade.pair}</span>
+                        <div className={`w-1.5 h-5 rounded-full flex-shrink-0 ${trade.isProfit ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                        <span className="text-xs sm:text-sm font-semibold text-white truncate">{trade.pair}</span>
                       </div>
-                      <span className="text-right text-sm text-slate-400">${trade.entry.toLocaleString()}</span>
-                      <span className="text-right text-sm text-white">${trade.current.toLocaleString()}</span>
-                      <span className="text-right text-sm text-slate-400">{trade.amount}</span>
-                      <span className={`text-right text-sm font-bold ${trade.isProfit ? 'text-emerald-400' : 'text-red-400'}`}>
+                      <span className="text-right text-xs sm:text-sm text-slate-400 hidden sm:block">${trade.entry.toLocaleString()}</span>
+                      <span className="text-right text-xs sm:text-sm text-white hidden sm:block">${trade.current.toLocaleString()}</span>
+                      <span className="text-right text-xs sm:text-sm text-slate-400">{trade.amount}</span>
+                      <span className={`text-right text-xs sm:text-sm font-bold ${trade.isProfit ? 'text-emerald-400' : 'text-red-400'}`}>
                         {trade.profit}
                       </span>
                     </div>

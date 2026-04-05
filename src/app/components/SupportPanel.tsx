@@ -4,7 +4,8 @@ import {
   Clock, CheckCircle, AlertCircle, RefreshCw, Inbox,
 } from 'lucide-react';
 
-const API_BASE = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) ?? 'https://ai.traderfive.com';
+const API_BASE = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL)
+  ?? 'http://localhost:4000';
 
 const CATEGORIES = [
   { id: 'deposit',    label: 'Deposit Issue'     },
@@ -194,8 +195,11 @@ export function SupportPanel({ user, token }: { user: any; token: string }) {
       <button
         onClick={() => setOpen(o => !o)}
         style={{
-          position: 'fixed', bottom: '28px', right: '28px', zIndex: 200,
-          width: '56px', height: '56px', borderRadius: '50%',
+          position: 'fixed',
+          bottom: typeof window !== 'undefined' && window.innerWidth < 640 ? '24px' : '28px',
+          right: '20px',
+          zIndex: 200,
+          width: '54px', height: '54px', borderRadius: '50%',
           background: '#10b981', border: 'none',
           boxShadow: '0 8px 32px rgba(16,185,129,0.4)',
           cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -221,21 +225,45 @@ export function SupportPanel({ user, token }: { user: any; token: string }) {
         )}
       </button>
 
+      {/* Mobile backdrop */}
+      {open && typeof window !== 'undefined' && window.innerWidth < 640 && (
+        <div
+          onClick={() => setOpen(false)}
+          style={{ position: 'fixed', inset: 0, zIndex: 198, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
+        />
+      )}
+
       {/* ── PANEL ── */}
       {open && (
         <div style={{
-          position: 'fixed', bottom: '96px', right: '28px', zIndex: 199,
-          width: '380px', height: '580px',
+          position: 'fixed',
+          // Mobile: full-width bottom sheet
+          bottom: 0, left: 0, right: 0,
+          // Desktop override via media query handled via JS below
+          zIndex: 199,
           background: '#0a0f1e',
           border: '1px solid #0f172a',
-          borderRadius: '20px',
-          boxShadow: '0 24px 80px rgba(0,0,0,0.6)',
+          borderRadius: '20px 20px 0 0',
+          boxShadow: '0 -8px 40px rgba(0,0,0,0.5)',
           display: 'flex', flexDirection: 'column',
           overflow: 'hidden',
+          height: '85vh',
           fontFamily: "'DM Mono','Fira Code','Courier New',monospace",
+          // Desktop: reposition as floating panel
+          ...( typeof window !== 'undefined' && window.innerWidth >= 640 ? {
+            bottom: '96px', left: 'auto', right: '28px',
+            width: '380px', height: '580px',
+            borderRadius: '20px',
+            boxShadow: '0 24px 80px rgba(0,0,0,0.6)',
+          } : {}),
         }}>
           {/* Top accent */}
           <div style={{ height: '2px', background: 'linear-gradient(90deg,transparent,#10b981,transparent)', flexShrink: 0 }} />
+
+          {/* Mobile drag handle */}
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 4px', flexShrink: 0 }}>
+            <div style={{ width: '36px', height: '4px', borderRadius: '2px', background: '#1e293b' }} />
+          </div>
 
           {/* ── HEADER ── */}
           <div style={{
