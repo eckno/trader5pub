@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { TrendingUp, Mail, Lock, User, Eye, EyeOff, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
+import { SEOHead } from "../components/SEOHead";
 import { Label } from "../components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Checkbox } from "../components/ui/checkbox";
@@ -120,6 +121,11 @@ export function SignupPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
+      <SEOHead
+        title="Create Account"
+        description="Join trader5 and start growing your capital with AI trading strategies. Free Conservative strategy available."
+        canonical="/signup"
+      />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

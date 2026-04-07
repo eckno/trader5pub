@@ -7,6 +7,7 @@ import { OnboardingPage } from "./pages/onboarding";
 import { DashboardPage } from "./pages/dashboard";
 import { Verify2FAPage } from "./pages/verify-2fa";
 import { AdminDashboard } from "./pages/admin";
+import { RiskDisclosurePage } from "./pages/risk-disclosure";
 
 export const router = createBrowserRouter([
   {
@@ -41,4 +42,5 @@ export const router = createBrowserRouter([
     path: "/admin",
     Component: AdminDashboard,
   },
+  { path: "/risk-disclosure", Component: RiskDisclosurePage },
 ]);

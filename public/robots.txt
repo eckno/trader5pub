@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /signup
+Allow: /risk-disclosure
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /verify-2fa
+
+Sitemap: https://trader5.ai/sitemap.xml

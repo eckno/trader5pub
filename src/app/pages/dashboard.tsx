@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { SupportPanel } from '../components/SupportPanel';
+import { SEOHead } from '../components/SEOHead';
 
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
 const API_BASE  = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) ?? 'https://ai.traderfive.com';
@@ -93,9 +94,9 @@ const aiStrategies = [
     description: 'Medium-risk strategy balancing growth and stability',
     riskLevel: 'Medium',
     riskColor: 'cyan',
-    minInvestment: 500,
+    minInvestment: 200,
     expectedReturn: '15-25%',
-    duration: '2 – 3 weeks',
+    duration: '1 week',
     icon: Activity,
   },
   {
@@ -105,9 +106,9 @@ const aiStrategies = [
     description: 'High-frequency trading for maximum returns',
     riskLevel: 'High',
     riskColor: 'orange',
-    minInvestment: 2500,
+    minInvestment: 1000,
     expectedReturn: '30-50%',
-    duration: '2 – 3 weeks',
+    duration: '1 week',
     icon: Zap,
   },
   {
@@ -117,9 +118,9 @@ const aiStrategies = [
     description: 'Automated yield farming across multiple protocols',
     riskLevel: 'Medium',
     riskColor: 'violet',
-    minInvestment: 1000,
+    minInvestment: 500,
     expectedReturn: '20-35%',
-    duration: '2 – 3 weeks',
+    duration: '1 week',
     icon: Cpu,
   },
 ];
@@ -567,6 +568,7 @@ function AITradingInner({ user, token, logout }: { user: any; token: string; log
   // ── RENDER ────────────────────────────────────────────────────────────────
   return (
     <>
+    <SEOHead title="Dashboard" noIndex={true} />
     <div className="min-h-screen bg-slate-950 text-slate-100" style={{ fontFamily: "'DM Mono', 'Fira Code', 'Courier New', monospace" }}>
 
       {/* Ambient background grid */}
@@ -1682,7 +1684,10 @@ function AITradingInner({ user, token, logout }: { user: any; token: string; log
           <p className="text-xs text-slate-600 leading-relaxed">
             <span className="text-amber-500/80 font-semibold">RISK NOTICE · </span>
             AI trading involves substantial risk. Past performance does not guarantee future results.
-            Algorithms cannot predict all market conditions. Only deploy capital you can afford to lose.
+            Algorithms cannot predict all market conditions. Only deploy capital you can afford to lose.{' '}
+            <a href="/risk-disclosure" className="text-emerald-600 hover:text-emerald-400 underline transition-colors">
+              Read full Risk Disclosure →
+            </a>
           </p>
         </div>
 
